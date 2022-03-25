@@ -1,28 +1,28 @@
 package task1;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AutoDealer {
-    private static final int TIME_PRODUCE_CAR = 3000;
     private static final int TIME_BUY_CAR = 1000;
+    private static final int TIME_WAIT_CAR = 5000;
 
-    private String name;
-    private List<AutoMaker> autoMakers;
-    private List<Auto> autos;
+    private final String name;
+    private final List<Auto> autos = new ArrayList<>();
+    private final List<AutoMaker> autoMakers;
 
-    public AutoDealer(String name, List<AutoMaker> autoMakers, List<Auto> autos) {
+    private int soldAuto = 0;
+
+    public AutoDealer(String name, List<AutoMaker> autoMakers) {
         this.name = name;
         this.autoMakers = autoMakers;
-        this.autos = autos;
     }
 
     public synchronized void acceptAuto() {
+        System.out.println(name + " заказал авто");
         try {
             Auto auto = getRandomAutoMaker().produce();
-            System.out.println("Автодилер: " + Thread.currentThread().getName() +
-                    ". Привез новую машину " + auto.getName());
             autos.add(auto);
-            Thread.sleep(TIME_PRODUCE_CAR);
             notifyAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -35,21 +35,29 @@ public class AutoDealer {
 
     public synchronized void sellAuto() {
         try {
-            System.out.println("Покупатель: " + Thread.currentThread().getName() + ". Пытаюсь купить машину");
+            System.out.println(Thread.currentThread().getName() + " зашел в автосалон");
             while (autos.size() == 0) {
-                System.out.println("Покупатель: " + Thread.currentThread().getName() + ". Не могу купить машину");
-                wait();
+                System.out.println("Машин нет");
+                wait(TIME_WAIT_CAR);
+                if (autos.isEmpty()) {
+                    System.out.println(Thread.currentThread().getName() + " не дождался и ушел");
+                    return;
+                }
             }
             Thread.sleep(TIME_BUY_CAR);
-            System.out.println("Покупатель: " + Thread.currentThread().getName() + ". Купил Машину "
-                    + autos.get(0).getName());
+            System.out.println(Thread.currentThread().getName() + " уехал на новеньком " + autos.get(0).getName());
             autos.remove(0);
-        } catch (InterruptedException e) {
+            soldAuto++;
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getSoldAuto() {
+        return soldAuto;
     }
 }

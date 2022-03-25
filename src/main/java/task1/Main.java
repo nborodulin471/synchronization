@@ -1,33 +1,24 @@
 package task1;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static final int LIMIT_AUTOS = 10;
+    public static final int WAIT_ITERATION = 4000;
 
     public static void main(String[] args) throws InterruptedException {
-        int autoSold = 0;
+        AutoMaker toyota = new AutoMaker("Тойота", List.of("Крузак", "Камри"));
+        AutoDealer autoDealer = new AutoDealer("Автодилер", List.of(toyota));
 
-        AutoMaker autoMaker1 = new AutoMaker("Запорожец", List.of("Ушастый", "Горабатый"));
-        AutoMaker autoMaker2 = new AutoMaker("Москвич", List.of("412", "2140"));
-        List<AutoMaker> autoMakers = List.of(autoMaker1, autoMaker2);
-        AutoDealer autoDealer = new AutoDealer("Авто без допов", autoMakers, new ArrayList<>());
-        Buyer buyer1 = new Buyer("Василий", "Степаненко");
-        Buyer buyer2 = new Buyer("Маргарита", "Василенко");
-
-        ThreadGroup threadBuyers = new ThreadGroup("Покупатели");
-        ThreadGroup threadAutoMaker = new ThreadGroup("Автодилер");
-        while (autoSold < LIMIT_AUTOS) {
-            new Thread(threadBuyers, autoDealer::sellAuto, buyer1.getName()).start();
-            new Thread(threadBuyers, autoDealer::sellAuto, buyer2.getName()).start();
-
-            Thread thread = new Thread(threadAutoMaker, autoDealer::acceptAuto, autoDealer.getName());
-            thread.start();
-            thread.join();
-            autoSold++;
+        while (autoDealer.getSoldAuto() < LIMIT_AUTOS) {
+            new Thread(null, autoDealer::acceptAuto, autoDealer.getName()).start();
+            new Thread(null, autoDealer::sellAuto, generateBuyer().getName()).start();
+            new Thread(null, autoDealer::sellAuto, generateBuyer().getName()).start();
+            Thread.sleep(WAIT_ITERATION);
         }
-        threadBuyers.interrupt();
-        threadAutoMaker.interrupt();
+    }
+
+    private static Buyer generateBuyer() {
+        return new Buyer("Покупатель №" +  (int)(Math.random() * 100));
     }
 }

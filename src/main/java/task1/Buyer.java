@@ -1,16 +1,14 @@
 package task1;
 
 public class Buyer {
-    private final String FIRST_NAME;
-    private final String LAST_NAME;
+    private final String NAME;
 
-    public Buyer(String FIRST_NAME, String LAST_NAME) {
-        this.FIRST_NAME = FIRST_NAME;
-        this.LAST_NAME = LAST_NAME;
+    public Buyer(String name) {
+        this.NAME = name;
     }
 
     public String getName() {
-        return FIRST_NAME + " " + LAST_NAME;
+        return NAME;
     }
 
 }

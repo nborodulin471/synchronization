@@ -4,29 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoMaker {
+    private static final int TIME_PRODUCE_CAR = 3000;
+
     private String name;
     private List<String> models;
-    private List<Auto> autos;
 
     public AutoMaker(String name, List<String> models) {
         this.name = name;
         this.models = models;
-        this.autos = new ArrayList<Auto>();
     }
 
     public String getName() {
         return name;
     }
 
-    public void addModel(String model) {
-        models.add(model);
-    }
-
     private String getRandomModel() {
         return models.get((int) (Math.random() * models.size()));
     }
 
-    public Auto produce() {
+    public Auto produce() throws InterruptedException {
+        Thread.sleep(TIME_PRODUCE_CAR);
+        System.out.println("Производитель " + name + " выпустил 1 авто");
         return new Auto(getRandomModel(), this);
     }
 
